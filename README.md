@@ -1,8 +1,9 @@
 # tetraclasse
 Satisfaction analysis - Llosa matrix - Tetraclasse model
 
-Analyses de la satisfaction - matrice de Llosa - modèle tetraclasse
+Analyses de la satisfaction - matrice de Llosa - modèle tetraclasse 
 
+Matrice importance-satisfaction d'après :
 <https://www.jstor.org/stable/40592578?seq=1#page_scan_tab_contents>
 
 

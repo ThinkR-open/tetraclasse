@@ -1,11 +1,11 @@
 Package: tetraclasse
 Type: Package
-Title: Satisfaction Analysis - Tetraclasse Model And Llosa Matrix
+Title: Satisfaction Analysis - Tetraclasse Model and Llosa Matrix
 Version: 0.1.0
 Author: vincent guyader
-Maintainer: vincent guyader <vincent@sthinkr.fr>
+Maintainer: vincent guyader <vincent@thinkr.fr>
 Description: The satisfaciton Analysis with the tetraclasse model from Llosa.
-License: GPL-3
+License: file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: ggplot2,
