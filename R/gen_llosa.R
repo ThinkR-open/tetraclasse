@@ -38,19 +38,19 @@ Llosa <- function(BID){
 #' library(tetraclasse)
 #'
 #'  if(require("dplyr")){
-#' gen_avis(500000) %>%
+#' gen_avis(5000) %>%
 #'   sample_n(50,replace = TRUE)%>%
 #'   prepare_base() %>%
 #'   gen_llosa()
-#'}
+#'
 #'
 #' gen_avis(500) %>%
 #'   prepare_base() %>%
 #'   gen_llosa()
-#'
+#'}
 #' @export
 
-gen_llosa <- function(dataset,borne=FALSE,annotate=TRUE,annotatetext = c("Secondaire"," Plus","Clef","Basique")){
+gen_llosa <- function(dataset,borne=FALSE,annotate=TRUE,annotatetext = c("Secondaire"," Plus","Basique","Clef")){
   dataset %>% CA() %>% Llosa() -> res
 
   # plot(res)

@@ -5,14 +5,17 @@ Version: 0.1.0
 Author: vincent guyader
 Maintainer: vincent guyader <vincent@thinkr.fr>
 Description: The satisfaciton Analysis with the tetraclasse model from Llosa.
-License: file LICENSE
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
-Imports: ggplot2,
+Imports:
+    ggplot2,
     reshape2,
     tidyr,
     FactoMineR,
     magrittr,
     tibble,
     ggrepel
-Suggests: dplyr
+Suggests:
+    dplyr
+RoxygenNote: 5.0.1
