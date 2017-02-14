@@ -121,6 +121,7 @@ prepare_base <- function(base){
 
 
   base %>% melt(id.vars="satis") %>%
+    filter(value != "NA")%>%
     unite("var",variable,value) %>%
     dcast(var~satis) %>%
     column_to_rownames("var")

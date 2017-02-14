@@ -15,18 +15,18 @@ Satisfaction Analysis - Tetraclasse Model And Llosa Matrix.
 library(tetraclasse)
 
  if(require("dplyr")){
-gen_avis(500000) \%>\%
+gen_avis(5000) \%>\%
   sample_n(50,replace = TRUE)\%>\%
   prepare_base() \%>\%
   gen_llosa()
-}
+
 
 
 gen_avis(500) \%>\%
   prepare_base() \%>\%
   gen_llosa()
 
-
+}
 
 
 
