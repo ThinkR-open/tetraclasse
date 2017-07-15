@@ -1,3 +1,7 @@
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/tetraclasse)](https://cran.r-project.org/package=tetraclasse)
+[![](http://cranlogs.r-pkg.org/badges/tetraclasse)](https://cran.r-project.org/package=tetraclasse)
+
+
 # tetraclasse
 Satisfaction analysis - Llosa matrix - Tetraclasse model
 
