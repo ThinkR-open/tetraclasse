@@ -4,10 +4,12 @@
 \alias{prepare_base}
 \title{prepare_base}
 \usage{
-prepare_base(base)
+prepare_base(base, satis_col = "satis")
 }
 \arguments{
 \item{base}{the base to reshape}
+
+\item{satis_col}{satisfaction column name}
 }
 \description{
 reshape the base
@@ -16,4 +18,3 @@ reshape the base
 base <- gen_avis(150)
 prepare_base(base)
 }
-

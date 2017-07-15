@@ -12,4 +12,3 @@ Llosa(BID)
 \description{
 hack CA objet
 }
-

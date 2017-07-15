@@ -1,15 +1,13 @@
 #' @importFrom utils packageDescription
+#' @noRd
 .onAttach <- function(libname, pkgname) {
-    # Runs when attached to search() path such as by library() or require()
-    if (interactive()) {
-
-
-        pdesc <- packageDescription(pkgname)
-        packageStartupMessage('')
-        packageStartupMessage(pdesc$Package, " ", pdesc$Version, " by Vinnent Guyader")
-        packageStartupMessage("->  For help type help('tetraclasse')")
-        packageStartupMessage('')
-            }
+  if (interactive()) {
+    pdesc <- packageDescription(pkgname)
+    packageStartupMessage('')
+    packageStartupMessage(pdesc$Package, " ", pdesc$Version, " by ",pdesc$Author)
+    packageStartupMessage(paste0('->  run help(',pkgname,')'))
+    packageStartupMessage('')
+  }
 }
 
 # enleve les faux positifs du check

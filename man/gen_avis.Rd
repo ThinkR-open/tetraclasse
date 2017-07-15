@@ -15,4 +15,3 @@ generate some random data
 \examples{
 base <- gen_avis(150)
 }
-

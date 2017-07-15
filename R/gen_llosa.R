@@ -20,10 +20,7 @@ Llosa <- function(BID){
 #' @param borne booleen do you want xlim and ylim
 #' @param annotate booleen do you want annotation
 #' @param annotatetext annotation text
-#' @examples
-#' base <- gen_avis(150)
-#' base <- prepare_base(base)
-#' gen_llosa(base)
+
 #' @importFrom FactoMineR CA
 #' @importFrom magrittr %>%
 #' @importFrom tibble rownames_to_column
@@ -32,13 +29,17 @@ Llosa <- function(BID){
 #' @importFrom ggrepel geom_text_repel
 #' @importFrom stats reorder
 #' @import ggplot2
+#' @export
 #' @examples
-#'
-#'
+#' 
+#' 
 #' library(tetraclasse)
+#' base <- gen_avis(150)
+#' base <- prepare_base(base)
+#' gen_llosa(base)
 #'
 #'  if(require("dplyr")){
-#' gen_avis(5000) %>%
+#' gen_avis(500) %>%
 #'   sample_n(50,replace = TRUE)%>%
 #'   prepare_base() %>%
 #'   gen_llosa()
@@ -48,28 +49,20 @@ Llosa <- function(BID){
 #'   prepare_base() %>%
 #'   gen_llosa()
 #'}
-#' @export
+#' 
 
 gen_llosa <- function(dataset,borne=FALSE,annotate=TRUE,annotatetext = c("Secondaire"," Plus","Basique","Clef")){
   dataset %>% CA() %>% Llosa() -> res
 
-  # plot(res)
   res$row$coord[,1,drop=FALSE] %>%
     as.data.frame() %>% rownames_to_column() %>%
     separate(rowname,c("critere","sens")) %>%
-    # assign("prout",.,.GlobalEnv) %>%
-    dcast(critere~sens) ->to.plot
+    dcast(critere~sens,value.var="Dim 1") ->to.plot
 
   to.plot[is.na(to.plot)]<-0 #peut etre pas le plus intelligent, mais de toutes facon cela n'arrivera jamais dans une vrai enquete.
 
   NN<-ggplot(data=to.plot ,aes(reorder(critere, negatif),negatif))+geom_bar(stat="identity")+coord_flip() +xlab("")
   PP<-ggplot(data=to.plot ,aes(reorder(critere, -positif),positif))+geom_bar(stat="identity")+coord_flip()+xlab("")
-  # PP<-ggdraw(switch_axis_position(PP, 'y'))
-  # PP <- PP+ scale_y_continuous(position = "right")
-  # NN<-ggdraw(NN)
-  # print(synth<-
-  #         grid.arrange(PP,NN,ncol=2)
-  #       )
 
 
 
@@ -79,8 +72,7 @@ gen_llosa <- function(dataset,borne=FALSE,annotate=TRUE,annotatetext = c("Second
   b<- max(abs(to.plot[,-1]),na.rm=TRUE)
   p<-ggplot(data=to.plot,aes(negatif,positif))+geom_point()+
     geom_hline(aes(yintercept=0))+geom_vline(aes(xintercept=0))+
-    # geom_text(aes(label=critere))+
-    geom_text_repel(aes(label=critere))+theme_bw()#
+    geom_text_repel(aes(label=critere))+theme_bw()
   annotations <- data.frame(
     xpos = c(-Inf,-Inf,Inf,Inf),
     ypos =  c(-Inf, Inf,-Inf,Inf),
@@ -107,7 +99,10 @@ list(info=list(PP=PP,NN=NN),graph=p,coord=to.plot)
 
 #' @title prepare_base
 #' @description reshape the base
+#'
+#' @param satis_col satisfaction column name
 #' @param base the base to reshape
+#'
 #' @examples
 #' base <- gen_avis(150)
 #' prepare_base(base)
@@ -115,15 +110,16 @@ list(info=list(PP=PP,NN=NN),graph=p,coord=to.plot)
 #' @importFrom reshape2 melt dcast
 #' @importFrom tibble column_to_rownames
 #' @importFrom tidyr unite
+#' @importFrom dplyr filter
 #' @export
 
-prepare_base <- function(base){
+prepare_base <- function(base,satis_col="satis"){
 
 
-  base %>% melt(id.vars="satis") %>%
+  base %>% melt(id.vars=satis_col) %>%
     filter(value != "NA")%>%
     unite("var",variable,value) %>%
-    dcast(var~satis) %>%
+    dcast(var~satis,value.var="var",fun.aggregate=length) %>%
     column_to_rownames("var")
 }
 

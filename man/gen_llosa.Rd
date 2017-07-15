@@ -20,8 +20,23 @@ gen_llosa(dataset, borne = FALSE, annotate = TRUE,
 plot the Llosa matrix
 }
 \examples{
+
+
+library(tetraclasse)
 base <- gen_avis(150)
 base <- prepare_base(base)
 gen_llosa(base)
+
+ if(require("dplyr")){
+gen_avis(500) \%>\%
+  sample_n(50,replace = TRUE)\%>\%
+  prepare_base() \%>\%
+  gen_llosa()
+
+
+gen_avis(500) \%>\%
+  prepare_base() \%>\%
+  gen_llosa()
 }
 
+}
