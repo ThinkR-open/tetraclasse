@@ -1,7 +1,6 @@
 #' @title gen_llosa
 #' @description hack CA objet
 #' @param BID CA objet to hack
-#' @export
 #'
 Llosa <- function(BID){
   BID$row$coord <-   cbind(BID$row$coord,0)
@@ -20,7 +19,6 @@ Llosa <- function(BID){
 #' @param borne booleen do you want xlim and ylim
 #' @param annotate booleen do you want annotation
 #' @param annotatetext annotation text
-
 #' @importFrom FactoMineR CA
 #' @importFrom magrittr %>%
 #' @importFrom tibble rownames_to_column
@@ -34,21 +32,10 @@ Llosa <- function(BID){
 #' 
 #' 
 #' library(tetraclasse)
-#' base <- gen_avis(150)
-#' base <- prepare_base(base)
-#' gen_llosa(base)
-#'
-#'  if(require("dplyr")){
-#' gen_avis(500) %>%
-#'   sample_n(50,replace = TRUE)%>%
+#' gen_avis(100) %>%
 #'   prepare_base() %>%
 #'   gen_llosa()
 #'
-#'
-#' gen_avis(500) %>%
-#'   prepare_base() %>%
-#'   gen_llosa()
-#'}
 #' 
 
 gen_llosa <- function(dataset,borne=FALSE,annotate=TRUE,annotatetext = c("Secondaire"," Plus","Basique","Clef")){
@@ -128,7 +115,7 @@ prepare_base <- function(base,satis_col="satis"){
 #' @description generate some random data
 #' @param N number of person
 #' @examples
-#' base <- gen_avis(150)
+#' base <- gen_avis(50)
 #' @export
 
 gen_avis <- function(N){

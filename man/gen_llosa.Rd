@@ -23,20 +23,9 @@ plot the Llosa matrix
 
 
 library(tetraclasse)
-base <- gen_avis(150)
-base <- prepare_base(base)
-gen_llosa(base)
-
- if(require("dplyr")){
-gen_avis(500) \%>\%
-  sample_n(50,replace = TRUE)\%>\%
+gen_avis(100) \%>\%
   prepare_base() \%>\%
   gen_llosa()
 
-
-gen_avis(500) \%>\%
-  prepare_base() \%>\%
-  gen_llosa()
-}
 
 }
