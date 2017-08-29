@@ -38,7 +38,7 @@ gen_avis(500) %>%
 ### depuis Github
 ```R
 # install.packages("devtools")
-devtools::install_github("ThinkRstat/tetraclasse")
+devtools::install_github("ThinkR-open/tetraclasse")
 ```
 
 ### depuis le CRAN
