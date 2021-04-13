@@ -11,37 +11,31 @@ Matrice importance-satisfaction d'après :
 <https://www.jstor.org/stable/40592578?seq=1#page_scan_tab_contents>
 
 
+<https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4139752>
+
 ## usage
 ```R
 library(tetraclasse)
 
- if(require("dplyr")){
+if(require("dplyr")){
+
 gen_avis(50000) %>%
   sample_n(500,replace = TRUE)%>%
   prepare_base() %>%
   gen_llosa()
 }
 
-
-gen_avis(500) %>%
-  prepare_base() %>%
-  gen_llosa()
-
 ```
-
-
-
 
 ## Installation
 
-
-### depuis Github
+### From Github
 ```R
 # install.packages("devtools")
 devtools::install_github("ThinkR-open/tetraclasse")
 ```
 
-### depuis le CRAN
+### FROM CRAN
 ```R
 install.packages("tetraclasse")
 ```

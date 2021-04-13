@@ -2,13 +2,13 @@
 % Please edit documentation in R/gen_llosa.R
 \name{Llosa}
 \alias{Llosa}
-\title{gen_llosa}
+\title{Llosa}
 \usage{
 Llosa(BID)
 }
 \arguments{
-\item{BID}{CA objet to hack}
+\item{BID}{CA object to hack}
 }
 \description{
-hack CA objet
+hack Correspodance Analysis - CA - object
 }

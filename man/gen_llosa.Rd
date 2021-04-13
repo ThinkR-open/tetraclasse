@@ -4,8 +4,12 @@
 \alias{gen_llosa}
 \title{gen_llosa}
 \usage{
-gen_llosa(dataset, borne = FALSE, annotate = TRUE,
-  annotatetext = c("Secondaire", " Plus", "Basique", "Clef"))
+gen_llosa(
+  dataset,
+  borne = FALSE,
+  annotate = TRUE,
+  annotatetext = c("Secondaire", " Plus", "Basique", "Clef")
+)
 }
 \arguments{
 \item{dataset}{the dataset to use}

@@ -4,7 +4,6 @@
 \encoding{UTF-8}
 \name{tetraclasse}
 \alias{tetraclasse}
-\alias{tetraclasse-package}
 \title{tetraclasse}
 \description{
 Satisfaction Analysis - Tetraclasse Model And Llosa Matrix.

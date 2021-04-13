@@ -1,14 +1,15 @@
-#' @title gen_llosa
-#' @description hack CA objet
-#' @param BID CA objet to hack
+#' @title Llosa
+#' @description hack Correspodance Analysis - CA - object
+#' @param BID CA object to hack
+#' @export
 #'
 Llosa <- function(BID){
-  BID$row$coord <-   cbind(BID$row$coord,0)
+  BID$row$coord <- cbind(BID$row$coord,0)
   BID$col$coord <- cbind(data.frame(BID$col$coord),0)
   colnames(BID$row$coord) <- c("Dim 1", "Dim 2")
   colnames(BID$col$coord) <- c("Dim 1", "Dim 2")
+  
   BID
-
 }
 
 
@@ -39,27 +40,47 @@ Llosa <- function(BID){
 #' 
 
 gen_llosa <- function(dataset,borne=FALSE,annotate=TRUE,annotatetext = c("Secondaire"," Plus","Basique","Clef")){
-  dataset %>% CA() %>% Llosa() -> res
+  res <- dataset %>% 
+          CA() %>% 
+          Llosa() 
 
-  res$row$coord[,1,drop=FALSE] %>%
-    as.data.frame() %>% rownames_to_column() %>%
-    separate(rowname,c("critere","sens")) %>%
-    dcast(critere~sens,value.var="Dim 1") ->to.plot
+  to.plot <- res$row$coord[,1,drop=FALSE] %>%
+              as.data.frame() %>% 
+              rownames_to_column() %>%
+              separate(rowname,c("critere","sens")) %>%
+              dcast(critere~sens,value.var="Dim 1") 
 
-  to.plot[is.na(to.plot)]<-0 #peut etre pas le plus intelligent, mais de toutes facon cela n'arrivera jamais dans une vrai enquete.
+  to.plot[is.na(to.plot)] <- 0 
+  #peut etre pas le plus intelligent, mais de toutes facon cela n'arrivera jamais dans une vrai enquete.
 
-  NN<-ggplot(data=to.plot ,aes(reorder(critere, negatif),negatif))+geom_bar(stat="identity")+coord_flip() +xlab("")
-  PP<-ggplot(data=to.plot ,aes(reorder(critere, -positif),positif))+geom_bar(stat="identity")+coord_flip()+xlab("")
+  NN <- ggplot(data=to.plot , 
+               aes(reorder(critere, negatif),negatif)) +
+         geom_bar(stat="identity")+
+         coord_flip() +
+         xlab("")
+  
+  PP <- ggplot(data=to.plot ,
+               aes(reorder(critere, -positif),positif)) +
+         geom_bar(stat="identity")+
+         coord_flip()+
+         xlab("")
 
 
 
-  to.plot$negatif <- to.plot$negatif-res$col$coord["negatif",1]
-  to.plot$positif <- -(to.plot$positif-res$col$coord["positif",1])
+  to.plot$negatif <- to.plot$negatif - res$col$coord["negatif",1]
+  
+  to.plot$positif <- -(to.plot$positif - res$col$coord["positif",1])
 
-  b<- max(abs(to.plot[,-1]),na.rm=TRUE)
-  p<-ggplot(data=to.plot,aes(negatif,positif))+geom_point()+
-    geom_hline(aes(yintercept=0))+geom_vline(aes(xintercept=0))+
-    geom_text_repel(aes(label=critere))+theme_bw()
+  b <- max(abs(to.plot[,-1]),na.rm=TRUE)
+  
+  p <- ggplot(data=to.plot,
+              aes(negatif,positif)) + 
+        geom_point()+
+        geom_hline(aes(yintercept=0))+
+        geom_vline(aes(xintercept=0))+
+        geom_text_repel(aes(label=critere)) +
+        theme_bw()
+  
   annotations <- data.frame(
     xpos = c(-Inf,-Inf,Inf,Inf),
     ypos =  c(-Inf, Inf,-Inf,Inf),
@@ -68,16 +89,26 @@ gen_llosa <- function(dataset,borne=FALSE,annotate=TRUE,annotatetext = c("Second
     vjustvar = c(0,1.0,0,1))
 
   if (borne){
-    p<-p  +ylim(-b,b)+xlim(-b,b)
+    p <-p  +
+        ylim(-b,b)+
+        xlim(-b,b)
     }
 
   if(annotate){
-  p<-p +   geom_text(data = annotations, aes(x=xpos,y=ypos,hjust=hjustvar,
-                                          vjust=vjustvar,label=annotatetext))
+   p <- p +   
+        geom_text(data = annotations, 
+                  aes(x=xpos,y=ypos,
+                      hjust=hjustvar,
+                      vjust=vjustvar,
+                      label=annotatetext))
   }
-print(p)
+  
+#print(p)
 
-list(info=list(PP=PP,NN=NN),graph=p,coord=to.plot)
+list( info=list(PP=PP,
+                NN=NN),
+      graph=p,
+      coord=to.plot)
 
 
 }
@@ -100,13 +131,16 @@ list(info=list(PP=PP,NN=NN),graph=p,coord=to.plot)
 #' @importFrom dplyr filter
 #' @export
 
-prepare_base <- function(base,satis_col="satis"){
+prepare_base <- function(base,
+                         satis_col = "satis"){
 
-
-  base %>% melt(id.vars=satis_col) %>%
+  base %>% 
+    melt(id.vars=satis_col) %>%
     filter(value != "NA")%>%
     unite("var",variable,value) %>%
-    dcast(var~satis,value.var="var",fun.aggregate=length) %>%
+    dcast(var~satis,
+          value.var="var",
+          fun.aggregate=length) %>%
     column_to_rownames("var")
 }
 
