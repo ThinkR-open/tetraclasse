@@ -2,16 +2,12 @@
 [![](http://cranlogs.r-pkg.org/badges/tetraclasse)](https://cran.r-project.org/package=tetraclasse)
 
 
-# tetraclasse
-Satisfaction analysis - Llosa matrix - Tetraclasse model
-
-Analyses de la satisfaction - matrice de Llosa - modèle tetraclasse 
-
-Matrice importance-satisfaction d'après :
-<https://www.jstor.org/stable/40592578?seq=1#page_scan_tab_contents>
+# tetraclasse: Satisfaction analysis with Llosa matrix & Tetraclass  model
 
 
-<https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4139752>
+The package was prepared from [Analyses de la satisfaction - matrice de Llosa - modèle tetraclasse. Matrice importance-satisfaction](https://www.jstor.org/stable/40592578?seq=1#page_scan_tab_contents)
+
+Please read the [Getting actionable insights from a satisfaction survey](docs/articles/how-to.Rmd)
 
 ## usage
 ```R

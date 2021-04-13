@@ -8,7 +8,9 @@ gen_llosa(
   dataset,
   borne = FALSE,
   annotate = TRUE,
-  annotatetext = c("Secondaire", " Plus", "Basique", "Clef")
+  annotatetext = c("Secondary- \\n \\"Little Influence\\"",
+    " Plus - \\n \\"Satisfaction\\"", "Basic - \\n \\"Disatisfaction\\"",
+    "Key - \\n \\"Regardless\\"")
 )
 }
 \arguments{

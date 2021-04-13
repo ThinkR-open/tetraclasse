@@ -4,7 +4,7 @@
 \alias{prepare_base}
 \title{prepare_base}
 \usage{
-prepare_base(base, satis_col = "satis_bin")
+prepare_base(base, satis_col = "satis")
 }
 \arguments{
 \item{base}{the base to reshape}

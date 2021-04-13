@@ -1,101 +1,338 @@
 ---
-title: "Getting actionable satisfaction survey results"
+title: "Getting actionable insights from a satisfaction survey"
 date: "`r Sys.Date()`"
-output:
-  prettydoc::html_pretty:
-    theme: cayman
-    highlight: github
+output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Getting actionable satisfaction survey results}
+  %\VignetteIndexEntry{Getting actionable insights from a satisfaction survey}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 
-Possibilities of the Llosa’s tetraclass model used for the measurement of consumer satisfaction and loyalty
-
-<https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4139752>
-https://link.springer.com/content/pdf/10.1057/palgrave.jt.5740099.pdf 
-
-## Satisfaction criteria types
-
-The services provided by the companies are classified into one of 4 categories, according to the way in which they affect satisfaction:
-
- * __Basic__ services: these service elements contribute strongly to the clients’ overall level of __dissatisfaction__ when they are evaluated in an unfavorable fashion. However, when they are evaluated favorably, they contribute only weakly to client satisfaction;
-
- * __Plus__ services: these service elements contribute strongly to the overall level of client __satisfaction__ when they are evaluated favorably. When they are evaluated unfavorably they contribute weakly to the client’s dissatisfaction;
-
- * __Key__ services: these service elements contribute strongly to the degree of dissatisfaction or satisfaction of the client, __regardless__ of evaluation, negative or positive;
-
- * __Secondary__ services: these service elements have __little Influence__ on the level of overall satisfaction or dissatisfaction, whichever way they are evaluated.
-
-
-
-## Developing the satisfaction survey
-
-
-
-### Assessing global satisfaction
-
-The first part of the questionnaire measures the global satisfaction of the consumer using three questions:
-
- * "It might be sad that I am satisfied of the service";
-
- * "I am happy that I am using the services of this pharmacy";
-
- * "I think that I have been always doing well when I was using the services of this center".
-  
-### Evaluate each criteria    
-In the second part, every respondent is requested to evaluate the service criteria on a 5 points semantic-differential scale. Crteria can include: 
-
- * Accessibility: Signs to reach the center, Car Park, Quickness, Security, Getting a convenient appointment
- * Availability: Clear indication of opening hours, Punctuality, Call me back 
- * Appropriateness: Clear Explanations, cultural sensitivity, Cleanliness
- * Responsiveness : Information on waiting time,  Availability of seats 
- * Reliability: Technical competences  
- * Empathy: Listening capacities,   
- * Professionalism:  Patience, Politeness
-
-
-### Characterise respondent profile
-
-Additional questions are focusing on different characteristics as: 
-
- * age,  
- * gender,  
- * level of education,  
- * distance between the community center and respondent home (from less that 1 Km to more than 10 Km), and   
- * duration of the contact with the center (from less than 1 to more than 5 years). 
-
-
-
-## Checking results
-
-```{r  message=FALSE, warning=FALSE}
+```{r  setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  echo = TRUE,
+  comment = "#>"
+)
 library(tetraclasse)
 library(magrittr)
 library(reshape2)
 library(tibble)
 library(tidyr)
 library(dplyr)
+library(tidyverse)
 library(ggplot2)
 library(ggrepel)
 library(unhcRstyle)
 ```
 
-```{r fig.width=6, fig.height=6, fig.align='center'}
+## The importance of satisfaction
+
+Satisfaction surveys are part of the toolbox of both public organizations and private companies, whether it is improve their __accountability__ to taxpayers or [affected people (in case of humanitarian support)](https://www.unhcr.org/handbooks/aap/documents/UNHCR-AAP_Operational_Guidance.pdf) or to increase the customer loyalty. Indeed, increasing satisfaction is important to increase the effectiveness. 
+
+Satisfaction is influenced by both the contact with the service provider, and personal outcomes. Improving satisfaction often:  
+
+> "Entails a massive cultural shift away from what is convenient for the organization to what is needed by the service users"   
+> -- [Elements of a Customer Satisfaction System](https://www.thecaap.org/file_download/910ba806-077e-469c-a710-6dde0eed1056)
+
+The Llosa’s `tetraclass` model can be used for a fine measurement of user satisfaction. Such model were demonstrated specifically relevant for instance for the [the management of the patient satisfaction in the pharmacies](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4139752) or the [contributions of elements of service to satisfaction, commitment and consumers’ share of purchase](https://link.springer.com/content/pdf/10.1057/palgrave.jt.5740099.pdf). 
+
+## Satisfaction criteria types
+
+The element of services provided by an organization or a company can be classified into one of 4 categories, according to the way in which they affect satisfaction:
+
+ * __Basic__ elements: these service elements contribute strongly to the clients’ overall level of _dissatisfaction_ when they are evaluated in an unfavorable fashion. However, when they are evaluated favorably, they contribute only weakly to client satisfaction;
+
+```{r echo= FALSE, message=FALSE, warning=FALSE, fig.width=4, fig.height=4, fig.align='center'}
+data <- data.frame(
+  x = seq(0.01, 0.98, length.out = 100),
+  y = log10(seq(0.01, 0.98, length.out = 100))
+)
+data$x <- data$x - 0.5
+
+p <- ggplot(data, aes(x, y)) +
+  geom_line( size = 3, color = unhcRstyle::unhcr_red) +
+  labs(title = "Satisfaction for BASIC Elements ",
+       subtitle = " Only important when missing...",
+       x = " ",
+       y = "   ",
+       caption = "  " ) + 
+  unhcRstyle::unhcr_theme(base_size = 11) +
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        
+        # legend.position = "none",
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(), 
+        panel.grid.minor.y = element_blank() ) + 
+  geom_vline(xintercept = 0, size = 0.7, colour = "#333333") + 
+  geom_hline(yintercept = 0, size = 0.7, colour = "#333333")
+
+annotatetext = c("Satisfaction",
+                 "Insatisfaction",
+                 "Criteria Present",
+                 "Criteria not present")
+  
+annotations <- data.frame(
+    xpos = c(Inf,-Inf, 0,     0  ),
+    ypos =  c(0,   0, Inf, -Inf),
+    annotatetext = annotatetext,
+    hjustvar = c(1,0,0,0) ,
+    vjustvar = c(0,0,1,0))
+
+p <- p +   
+        geom_label(data = annotations, 
+                  aes(x=xpos,y=ypos,
+                      hjust=hjustvar,
+                      vjust=vjustvar,
+                      label=annotatetext))+
+        ylim(min(data$y) -1,max(data$y) + 1) +
+        xlim(min(data$x) -1,max(data$x) + 1)
+p
+```
+
+ * __Key__ elements: these service elements contribute strongly to the degree of dissatisfaction or satisfaction of the client, _regardless_ of evaluation, negative or positive;
+
+```{r echo= FALSE, message=FALSE, warning=FALSE, fig.width=4, fig.height=4, fig.align='center'}
+data <- data.frame(
+  x = seq(-1, 1, length.out = 100)
+)
+data$y <- data$x * 2
+
+p <- ggplot(data, aes(x, y)) +
+  geom_line( size = 3, color = unhcRstyle::unhcr_blue) +
+  labs(title = "Satisfaction for KEY Elements ",
+       subtitle = " The more, the better...",
+       x = " ",
+       y = "   ",
+       caption = "  " ) + 
+  unhcRstyle::unhcr_theme(base_size = 9) +
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        
+        # legend.position = "none",
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(), 
+        panel.grid.minor.y = element_blank() ) + 
+  geom_vline(xintercept = 0, size = 0.7, colour = "#333333") + 
+  geom_hline(yintercept = 0, size = 0.7, colour = "#333333")
+
+annotatetext = c("Satisfaction",
+                 "Insatisfaction",
+                 "Criteria Present",
+                 "Criteria not present")
+  
+annotations <- data.frame(
+    xpos = c(Inf,-Inf, 0,     0  ),
+    ypos =  c(0,   0, Inf, -Inf),
+    annotatetext = annotatetext,
+    hjustvar = c(1,0,0,0) ,
+    vjustvar = c(0,0,1,0))
+
+p <- p +   
+        geom_label(data = annotations, 
+                  aes(x=xpos,y=ypos,
+                      hjust=hjustvar,
+                      vjust=vjustvar,
+                      label=annotatetext))+
+        ylim(min(data$y) -1, max(data$y) + 1) +
+        xlim(min(data$x) -1, max(data$x) + 1)
+p
+```
+
+ * __Plus__ elements: these service elements contribute strongly to the overall level of client _satisfaction_ when they are evaluated favorably. When they are evaluated unfavorably they contribute weakly to the client’s dissatisfaction;
+
+
+```{r echo= FALSE, message=FALSE, warning=FALSE, fig.width=4, fig.height=4, fig.align='center'}
+data <- data.frame(
+  y = seq(0.01, 0.98, length.out = 100),
+  x = log10(seq(0.01, 0.98, length.out = 100))
+)
+data$x <- data$x + 0.5
+
+p <- ggplot(data, aes(x, y)) +
+  geom_line( size = 3, color = unhcRstyle::unhcr_green) +
+  labs(title = "Satisfaction for PLUS Elements ",
+       subtitle = " Good if available, Not important when not available...",
+       x = " ",
+       y = "   ",
+       caption = "  " ) + 
+  unhcRstyle::unhcr_theme(base_size = 9) +
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        
+        # legend.position = "none",
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(), 
+        panel.grid.minor.y = element_blank() ) + 
+  geom_vline(xintercept = 0, size = 0.7, colour = "#333333") + 
+  geom_hline(yintercept = 0, size = 0.7, colour = "#333333")
+
+annotatetext = c("Satisfaction",
+                 "Insatisfaction",
+                 "Criteria Present",
+                 "Criteria not present")
+  
+annotations <- data.frame(
+    xpos = c(Inf,-Inf, 0,     0  ),
+    ypos =  c(0,   0, Inf, -Inf),
+    annotatetext = annotatetext,
+    hjustvar = c(1,0,0,0) ,
+    vjustvar = c(0,0,1,0))
+
+p <- p +   
+        geom_label(data = annotations, 
+                  aes(x=xpos,y=ypos,
+                      hjust=hjustvar,
+                      vjust=vjustvar,
+                      label=annotatetext))+
+        ylim(min(data$y) -1,max(data$y) + 1) +
+        xlim(min(data$x) -1,max(data$x) + 1)
+p
+```
+
+
+ 
+
+ * __Secondary__ elements: these service elements have _little Influence_ on the level of overall satisfaction or dissatisfaction, whichever way they are evaluated.
+
+
+```{r echo= FALSE, message=FALSE, warning=FALSE, fig.width=4, fig.height=4, fig.align='center'}
+data <- data.frame(
+  x = seq(-1, 1, length.out = 100)
+)
+data$y <- data$x * 0.2
+
+p <- ggplot(data, aes(x, y)) +
+  geom_line( size = 3, color = unhcRstyle::unhcr_grey) +
+  labs(title = "Satisfaction for SECONDARY Elements ",
+       subtitle = " Little influence on satisfaction wether available or not..",
+       x = " ",
+       y = "   ",
+       caption = "  " ) + 
+  unhcRstyle::unhcr_theme(base_size = 9) +
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        
+        # legend.position = "none",
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(), 
+        panel.grid.minor.y = element_blank() ) + 
+  geom_vline(xintercept = 0, size = 0.7, colour = "#333333") + 
+  geom_hline(yintercept = 0, size = 0.7, colour = "#333333")
+
+annotatetext = c("Satisfaction",
+                 "Insatisfaction",
+                 "Criteria Present",
+                 "Criteria not present")
+  
+annotations <- data.frame(
+    xpos = c(Inf,-Inf, 0,     0  ),
+    ypos =  c(0,   0, Inf, -Inf),
+    annotatetext = annotatetext,
+    hjustvar = c(1,0,0,0) ,
+    vjustvar = c(0,0,1,0))
+
+p <- p +   
+        geom_label(data = annotations, 
+                  aes(x=xpos,y=ypos,
+                      hjust=hjustvar,
+                      vjust=vjustvar,
+                      label=annotatetext))+
+        ylim(min(data$y) -1, max(data$y) + 1) +
+        xlim(min(data$x) -1, max(data$x) + 1)
+p
+``` 
+
+Understanding how different elements contribute to the global satisfaction of end users allow to __prioritize which one should be fixed first__: Address firs the basic to minimize dissatisfaction, then improve the key elements. Once those two first categories have been improved focus on plus elements and in case, all the above are ok, work on the secondary elements.
+
+
+
+## Developing the satisfaction survey
+
+The points above inform how a satisfaction survey shall be developed.
+
+ 1. Assess first overall satisfaction for the service
+ 2. Assess then one-by-one each of the potential elements of service that can contribute to satisfaction
+ 3. Add user profiling questions
+
+
+### Assessing global satisfaction
+
+The first part of the questionnaire measures the global satisfaction of the user. 
+  
+### Evaluate each criteria    
+
+
+
+In the second part, every respondent is requested to evaluate the service criteria on a 5 points semantic-differential scale. 
+
+Criteria can include: 
+
+ * __Accessibility__: 
+
+    * Are there signs/usfficient indication to reach the center?
+    * Is the center easily accessible in terms of (public) transport?
+    * Is the center location safe and secured? 
+    * Is easy to get a convenient appointment?
+    
+ * __Availability__: 
+
+    * Clear indication of opening hours, Punctuality, Call me back 
+    
+ * __Appropriateness__: 
+
+    * Clear Explanations, cultural sensitivity, Cleanliness
+    
+ * __Responsiveness__: 
+
+    * Information on waiting time,  Availability of seats 
+    
+ * __Reliability__: 
+
+    * Technical competences  
+ * __Empathy__: 
+
+    * Listening capacities,
+    
+ * __Professionalism__: 
+
+    * Patience, Politeness
+
+
+### Characterise respondent profile
+
+Additional questions are focusing on different characteristics as: 
+
+ * Age,  
+ * Gender,  
+ * Level of education,  
+ * Distance between the community center and respondent home (from less that 1 Km to more than 10 Km), and   
+ * Duration of the contact with the center (from less than 1 to more than 5 years). 
+
+
+
+## Checking results
+
+
+```{r  }
  # generate an example dataset with 150 respondant
  base <- gen_satis(150)
 ```
 
 
-```{r fig.width=6, fig.height=6, fig.align='center'}
+```{r  }
 #prepare the dataset
 base1 <- prepare_base(base)
 dataset <- base1
 ```
 
-```{r fig.width=6, fig.height=6, fig.align='center'}
+```{r  }
 # construct the Llosa matrix
 # gen_llosa(base, 
 #           annotate = TRUE,
@@ -103,13 +340,13 @@ dataset <- base1
 
 ```
 
-```{r fig.width=6, fig.height=6, fig.align='center'}
+```{r message=FALSE, warning=FALSE}
 res <- dataset %>% 
-          FactoMineR::CA() %>% 
+          FactoMineR::CA( graph = FALSE) %>% 
           tetraclasse::Llosa() 
 ```
 
-```{r fig.width=6, fig.height=6, fig.align='center'}
+```{r }
 to.plot <- res$row$coord[,1,drop=FALSE] %>%
               as.data.frame() %>% 
               rownames_to_column() %>%
@@ -123,9 +360,9 @@ to.plot[is.na(to.plot)] <- 0
 
 ### Type of Criteria
 
-```{r fig.width=6, fig.height=6, fig.align='center'}
+```{r fig.width=8, fig.height=8, fig.align='center'}
 NN <- ggplot(data=to.plot , 
-               aes(reorder(critere, negatif),negatif)) +
+               aes(reorder(critere, negative),negative)) +
          geom_bar(stat="identity")+
          coord_flip() +
   labs(title = "Contribution Level to satisfaction ",
@@ -145,11 +382,12 @@ NN <- ggplot(data=to.plot ,
 NN
 ```
 
-```{r fig.width=6, fig.height=6, fig.align='center'}  
+```{r fig.width=8, fig.height=8, fig.align='center'}  
 PP <- ggplot(data=to.plot ,
-               aes(reorder(critere, -positif),positif)) +
+               aes(reorder(critere, -positive),positive)) +
          geom_bar(stat="identity")+
          coord_flip()+
+  scale_fill_manual(values = c("FALSE" = "#EF4A60", "TRUE" = "#00B398")) +
   labs(title = "Contribution level to satisfaction ",
        subtitle = "When POSITIVELY evaluated",
        x = "Criteria",
@@ -170,69 +408,99 @@ PP
 
 By defining the important services for the area of interest and applying a correspondence analysis towards the data processing, a simple visual map is produced pointing at the place of the concrete services elements within the above four groups of basic, secondary, plus and key services.
 
-```{r fig.width=6, fig.height=6, fig.align='center'}
+```{r fig.width=8, fig.height=8, fig.align='center'}
+to.plot2 <- to.plot
+## adjust results in relation with global satisfaction from CA
+to.plot2$negative <- to.plot2$negative - res$col$coord["negative",1]
+to.plot2$positive <- -(to.plot2$positive - res$col$coord["positive",1])
 
-to.plot$negatif <- to.plot$negatif - res$col$coord["negatif",1]
   
-to.plot$positif <- -(to.plot$positif - res$col$coord["positif",1])
-
-b <- max(abs(to.plot[,-1]),na.rm=TRUE)
-  
-p <- ggplot(data=to.plot,
-              aes(negatif,
-                  positif)) + 
+p <- ggplot(data=to.plot2,
+              aes(x = negative,
+                  y = positive)) + 
         geom_point()+
         geom_hline(aes(yintercept=0))+
         geom_vline(aes(xintercept=0))+
         geom_text_repel(aes(label=critere)) +
   labs(title = "Satisfaction Criteria Categorization",
-       subtitle = "TetraClass Model",
+       subtitle = "TetraClass Model - Address the basic, next key, then plus and eventually secondary",
        
        x = "Contribution to satisfaction if NEGATIVELY evaluated",
        y = "Contribution to satisfaction if POSITIVELY evaluated",
        caption = "Data Source: Satisfaction Survey " ) +
   unhcRstyle::unhcr_theme(base_size = 11) +
-  theme(#axis.text.x = element_blank(),
-        # legend.position = "none",
-        
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        legend.position = "none",
         panel.grid.major.y = element_line(color = "#cbcbcb"), 
         panel.grid.major.x = element_line(color = "#cbcbcb") ) + 
   geom_hline(yintercept = 0, size = 0.7, colour = "#333333")  + 
   geom_vline(xintercept = 0, size = 0.7, colour = "#333333") 
 
 #annotatetext = c("Secondaire"," Plus","Basique","Clef")
-annotatetext = c("Secondary- \nLittle Influence",
-                 " Plus - \nsatisfaction",
-                 "Basic - \ndisatisfaction",
-                 "Key - \nregardless")
+annotatetext = c("Secondary- \n \"Little Influence\"",
+                 " Plus - \n \"Satisfaction\"",
+                 "Basic - \n \"Disatisfaction\"",
+                 "Key - \n \"Regardless\"")
   
 annotations <- data.frame(
     xpos = c(-Inf,-Inf,Inf,Inf),
     ypos =  c(-Inf, Inf,-Inf,Inf),
     annotatetext = annotatetext,
+    coul =  c("#666666","#0072BC", "#00B398","#EF4A60" ),
     hjustvar = c(0,0,1,1) ,
     vjustvar = c(0,1.0,0,1))
 
 p <- p +   
-        geom_text(data = annotations, 
-                  aes(x=xpos,y=ypos,
+        geom_label(data = annotations, 
+                  aes(x=xpos,
+                      y=ypos,
                       hjust=hjustvar,
                       vjust=vjustvar,
-                      label=annotatetext))
+                      label=annotatetext,
+                      fill = factor(coul)))
 
 p
 ```
 
 
-### Z Test
+### Testing Satisfaction changes to other vairiables
 
-The changes shall be separately statistically analyzed in relation to respondents’ characteristics using the 2-tail z-test analysis assuming the two proportions are equal.
+The changes in terms of satisfaction shall be also separately statistically analyzed in relation to respondents’ characteristics - agege, gender, education, etc. - using the 2-tail z-test (Interval Estimate of Population Mean with Known Variance) analysis assuming the two proportions are equal.
+
+```{r}
+z.test = function(x,mu,popvar){
+  # The first argument is the vector of data, 
+  # the second is the population mean, and 
+  # the third is the population variance. 
+  
+
+  one.tail.p <- NULL
+  z.score <- round((mean(x)-mu)/(popvar/sqrt(length(x))),3)
+  one.tail.p <- round(pnorm(abs(z.score),lower.tail = FALSE),3)
+  cat(" z =",z.score,"\n",
+        "one-tailed probability =", one.tail.p,
+         "\n if p < 0.05, the hypothesis is rejected.\n ",
+        "two-tailed probability =", 2*one.tail.p )
+}
+
+
+
+```
+
 
 ## Conclusions
 
 
 
 The `tetraclass` model has the following advantages: 
+
  * It is based on clients own experiences of services and not a simulation, 
+ 
  * It allows to develop visual contribution charts, establishing the boundaries between categories of services elements clearly and not arbitrarily,
- It weight weighting criteria on the basis of their positive or negative performance.
+ 
+ * It weight weighting criteria on the basis of their positive or negative performance.
+ 
+ 
+As demonstrated here, using such model can be fairly simple and can greatly contribute to the improvement of both service effectiveness and accountability.
+
