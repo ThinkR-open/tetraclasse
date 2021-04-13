@@ -4,8 +4,14 @@
 \alias{gen_llosa}
 \title{gen_llosa}
 \usage{
-gen_llosa(dataset, borne = FALSE, annotate = TRUE,
-  annotatetext = c("Secondaire", " Plus", "Basique", "Clef"))
+gen_llosa(
+  dataset,
+  borne = FALSE,
+  annotate = TRUE,
+  annotatetext = c("Secondary- \\n \\"Little Influence\\"",
+    " Plus - \\n \\"Satisfaction\\"", "Basic - \\n \\"Disatisfaction\\"",
+    "Key - \\n \\"Regardless\\"")
+)
 }
 \arguments{
 \item{dataset}{the dataset to use}
@@ -23,7 +29,7 @@ plot the Llosa matrix
 
 
 library(tetraclasse)
-gen_avis(100) \%>\%
+gen_satis(100) \%>\%
   prepare_base() \%>\%
   gen_llosa()
 
