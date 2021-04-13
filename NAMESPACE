@@ -2,8 +2,8 @@
 
 export("%>%")
 export(Llosa)
-export(gen_avis)
 export(gen_llosa)
+export(gen_satis)
 export(prepare_base)
 import(ggplot2)
 importFrom(FactoMineR,CA)

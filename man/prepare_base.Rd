@@ -4,7 +4,7 @@
 \alias{prepare_base}
 \title{prepare_base}
 \usage{
-prepare_base(base, satis_col = "satis")
+prepare_base(base, satis_col = "satis_bin")
 }
 \arguments{
 \item{base}{the base to reshape}
@@ -12,9 +12,9 @@ prepare_base(base, satis_col = "satis")
 \item{satis_col}{satisfaction column name}
 }
 \description{
-reshape the base
+reshape the survey results so that the Matrix can be processed
 }
 \examples{
-base <- gen_avis(150)
+base <- gen_satis(150)
 prepare_base(base)
 }

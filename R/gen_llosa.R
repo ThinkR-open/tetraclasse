@@ -1,9 +1,75 @@
+
+#' @title gen_satis
+#' @description generate some random data for a satisfaction survey
+#' @param N number of person
+#' @examples
+#' base <- gen_satis(50)
+#' @export
+
+gen_satis <- function(N=500){
+  # N <- 50
+  set.seed(123)
+  base <- data.frame(
+    satis  =    sample(0:10,N,replace=TRUE)  ,
+    Accessibility = sample(c("positif","negatif"),N,replace=TRUE,prob = c(0.1,0.9)),
+    Responsiveness =  sample(c("positif","negatif"),N,replace=TRUE,prob = c(0.3,0.7)),
+    Appropriateness =  sample(c("positif","negatif"),N,replace=TRUE,prob = c(0.3,0.7)),
+    Professionalism = sample(c("positif","negatif"),N,replace=TRUE,prob = c(0.8,0.2)),
+    Empathy =     sample(c("positif","negatif"),N,replace=TRUE,prob = c(0.6,0.4)),
+    Reliability = sample(c("positif","negatif"),N,replace=TRUE,prob = c(0.7,0.3)),
+    Availability = sample(c("positif","negatif"),N,replace=TRUE,prob = c(0.1,0.9))
+    
+  )
+  
+  ## ??? 
+  base$satis  <- as.factor(base$satis >5)
+  levels(base$satis )<-c("negatif","positif")
+  base
+}
+
+
+
+#' @title prepare_base
+#' @description reshape the survey results so that the Matrix can be processed
+#'
+#' @param satis_col satisfaction column name
+#' @param base the base to reshape
+#'
+#' @examples
+#' base <- gen_satis(150)
+#' prepare_base(base)
+#' @importFrom magrittr %>%
+#' @importFrom reshape2 melt dcast
+#' @importFrom tibble column_to_rownames
+#' @importFrom tidyr unite
+#' @importFrom dplyr filter
+#' @export
+
+prepare_base <- function(base,
+                         satis_col = "satis"){
+  
+  base %>% 
+    melt(id.vars = satis_col) %>%
+    filter(value != "NA") %>%
+    unite("var",variable,value) %>%
+    dcast(var~satis,
+          value.var="var",
+          fun.aggregate=length) %>%
+    column_to_rownames("var")
+}
+
+
+
+
+
 #' @title Llosa
 #' @description hack Correspodance Analysis - CA - object
 #' @param BID CA object to hack
 #' @export
 #'
 Llosa <- function(BID){
+  
+  # BID <- base1
   BID$row$coord <- cbind(BID$row$coord,0)
   BID$col$coord <- cbind(data.frame(BID$col$coord),0)
   colnames(BID$row$coord) <- c("Dim 1", "Dim 2")
@@ -33,7 +99,7 @@ Llosa <- function(BID){
 #' 
 #' 
 #' library(tetraclasse)
-#' gen_avis(100) %>%
+#' gen_satis(100) %>%
 #'   prepare_base() %>%
 #'   gen_llosa()
 #'
@@ -113,57 +179,3 @@ list( info=list(PP=PP,
 
 }
 
-
-
-#' @title prepare_base
-#' @description reshape the base
-#'
-#' @param satis_col satisfaction column name
-#' @param base the base to reshape
-#'
-#' @examples
-#' base <- gen_avis(150)
-#' prepare_base(base)
-#' @importFrom magrittr %>%
-#' @importFrom reshape2 melt dcast
-#' @importFrom tibble column_to_rownames
-#' @importFrom tidyr unite
-#' @importFrom dplyr filter
-#' @export
-
-prepare_base <- function(base,
-                         satis_col = "satis"){
-
-  base %>% 
-    melt(id.vars=satis_col) %>%
-    filter(value != "NA")%>%
-    unite("var",variable,value) %>%
-    dcast(var~satis,
-          value.var="var",
-          fun.aggregate=length) %>%
-    column_to_rownames("var")
-}
-
-
-#' @title gen_avis
-#' @description generate some random data
-#' @param N number of person
-#' @examples
-#' base <- gen_avis(50)
-#' @export
-
-gen_avis <- function(N){
- base<- data.frame(
-    satis =    sample(0:10,N,replace=TRUE)  ,
-    A =        sample(c("positif","negatif"),N,replace=TRUE,prob = c(0.1,0.9)),
-    B =        sample(c("positif","negatif"),N,replace=TRUE,prob = c(0.3,0.7)),
-    C =        sample(c("positif","negatif"),N,replace=TRUE,prob = c(0.6,0.4)),
-    D =        sample(c("positif","negatif"),N,replace=TRUE,prob = c(0.7,0.3)),
-    E =        sample(c("positif","negatif"),N,replace=TRUE,prob = c(0.1,0.9))
-
-  )
-
- base$satis<- as.factor(base$satis>5)
- levels(base$satis)<-c("negatif","positif")
- base
-}

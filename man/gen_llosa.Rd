@@ -27,7 +27,7 @@ plot the Llosa matrix
 
 
 library(tetraclasse)
-gen_avis(100) \%>\%
+gen_satis(100) \%>\%
   prepare_base() \%>\%
   gen_llosa()
 
